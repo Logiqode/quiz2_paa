@@ -7,10 +7,10 @@ def get_reachable_area(start_x, start_y, tile_map):
     height, width = tile_map.shape
     while queue:
         x, y = queue.popleft()
-        for nx, ny in [(x+1,y),(x-1,y),(x,y+1),(x,y-1)]:
+        for nx, ny in [(x+1,y), (x-1,y), (x,y+1), (x,y-1)]:
             if 0 <= nx < width and 0 <= ny < height:
                 if (nx, ny) not in reachable:
-                    if tile_map[ny, nx] == 0:  # Only walkable tiles (0)
+                    if tile_map[ny, nx] in (0, 4):  # Allow ladders
                         reachable.add((nx, ny))
                         queue.append((nx, ny))
     return reachable

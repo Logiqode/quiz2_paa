@@ -1,14 +1,17 @@
 import pygame
 from game.player.movement.controller import handle_mouse_click, get_reachable_area
 from game.keybinds.loader import load_keybinds
-from data.map.mansion_floor_1 import TILE_MAP
+from data.map.mansion_floor_1 import TILE_MAP as MANSION_MAP
+from data.map.mansion_ladder_map import MANSION_LADDER_SUBMAP
 from data.colors import *
-
+x
 # Constants
 GRID_WIDTH, GRID_HEIGHT = 10, 10
 TILE_SIZE = 48
+current_map = MANSION_MAP
 player_pos = {"x": 0, "y": 0}
-reachable_area = [get_reachable_area(player_pos["x"], player_pos["y"], TILE_MAP)]  # mutable list
+map_name = "mansion"  # Can be "mansion" or "ladder"
+reachable_area = [get_reachable_area(player_pos["x"], player_pos["y"], current_map)]  # mutable list
 keybinds = load_keybinds()
 
 # Init Pygame
@@ -21,7 +24,7 @@ def draw_grid():
     screen.fill(BLACK)
     for y in range(GRID_HEIGHT):
         for x in range(GRID_WIDTH):
-            tile = TILE_MAP[y, x]
+            tile = current_map[y, x]
             if tile == 1:      # Wall
                 color = GRAY
             elif tile == 2:    # Obstacle
@@ -57,12 +60,12 @@ while running:
             running = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            handle_mouse_click(event, player_pos, TILE_MAP, TILE_SIZE, reachable_area)
+            handle_mouse_click(event, player_pos, current_map, TILE_SIZE, reachable_area)
 
         elif event.type == pygame.KEYDOWN:
             if event.key == keybinds["use"]:
                 px, py = player_pos["x"], player_pos["y"]
-                tile = TILE_MAP[py, px]
+                tile = current_map[py, px]
                 if tile == 3:
                     print("Open container")
                 elif tile == 4:
