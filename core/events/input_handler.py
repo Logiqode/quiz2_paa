@@ -33,12 +33,20 @@ class InputHandler:
                 print(f"Target set to: ({grid_x}, {grid_y}) for form {self.game.state.current_form}")
                 self.game.state.target_pos = (grid_x, grid_y)
                 # Call pathfinder with tile_properties_grid and current_form
-                self.game.state.path = self.game.pathfinder.bfs(
-                    self.game.state.player_pos, # Use property for current position
-                    self.game.state.target_pos,
-                    self.game.state.tile_properties_grid, # Pass the properties grid
-                    self.game.state.current_form # Pass the current form
-                )
+                if self.game.algorithm == "BFS":
+                    self.game.state.path = self.game.pathfinder.bfs(
+                        self.game.state.player_grid_pos,
+                        self.game.state.target_pos,
+                        self.game.state.tile_properties_grid,
+                        self.game.state.current_form
+                    )
+                elif self.game.algorithm == "DFS":
+                    self.game.state.path = self.game.pathfinder.dfs(
+                        self.game.state.player_grid_pos,
+                        self.game.state.target_pos,
+                        self.game.state.tile_properties_grid,
+                        self.game.state.current_form
+                    )
                 if not self.game.state.path and self.game.state.player_pos != self.game.state.target_pos:
                     print(f"No path found to ({grid_x}, {grid_y}) for form {self.game.state.current_form}")
                 elif self.game.state.path:
