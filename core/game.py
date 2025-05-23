@@ -7,6 +7,7 @@ from core.algorithms.pathfinder import Pathfinder
 from core.map.map_loader import load_tiled_map
 from core.events.event_handler import EventHandler
 from settings import GRID_SIZE, GRID_COLS, GRID_ROWS
+from core.camera import Camera
 
 class Game:
     def __init__(self, screen):
@@ -28,6 +29,11 @@ class Game:
         for tileset in self.tiled_data["tilesets"]:
             self.tileset_manager.load_tileset(tileset)
         self.renderer = MapRenderer(screen, self.tileset_manager)
+
+        # Initialize camera
+        map_pixel_width = self.tiled_data["width"] * GRID_SIZE
+        map_pixel_height = self.tiled_data["height"] * GRID_SIZE
+        self.camera = Camera(WIDTH, HEIGHT, map_pixel_width, map_pixel_height)
     
     def find_walkable_position(self):
         """Find first walkable position for player spawn"""
@@ -47,11 +53,12 @@ class Game:
     def update(self):
         dt = self.clock.get_time() / 1000
         self.state.update_player_position(dt)
+        
+        # Update camera to follow player's pixel position
+        self.camera.update(self.state.player_pixel_pos)
     
     def draw(self):
-        self.screen.fill(BLACK)
-        self.renderer.draw(self.state, self.tiled_data)
-        # Draw other entities (player, etc.) here
+        self.renderer.draw(self.state, self.tiled_data, self.camera)
         pygame.display.flip()
     
     def quit_game(self):
