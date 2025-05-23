@@ -14,7 +14,7 @@ class GameState:
         self.path = []
         self.is_moving = False
         self.current_target_pixel = None
-        self.movement_speed = 180  # pixels per second
+        self.movement_speed = 240  # pixels per second
 
     def find_walkable_position(self):
         """Find the first walkable position in the grid"""

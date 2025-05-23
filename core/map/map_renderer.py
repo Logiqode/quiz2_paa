@@ -23,13 +23,20 @@ class MapRenderer:
         pygame.display.flip()
     
     def draw_path(self, game_state):
-        """Draw the path as blue circles"""
+        """Draw the path as semi-transparent blue circles"""
+        # Create a transparent surface
+        path_surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
+
         for x, y in game_state.path:
             center = (
                 x * GRID_SIZE + GRID_SIZE // 2,
                 y * GRID_SIZE + GRID_SIZE // 2
             )
-            pygame.draw.circle(self.screen, (0, 0, 255), center, GRID_SIZE // 3)
+            # Draw with RGBA: 0, 0, 255, 64
+            pygame.draw.circle(path_surface, (0, 0, 255, 64), center, GRID_SIZE // 3)
+
+        # Blit the transparent surface onto the main screen
+        self.screen.blit(path_surface, (0, 0))
     
     def draw_player(self, game_state):
         """Draw the player as a green circle"""
