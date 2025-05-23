@@ -1,78 +1,16 @@
 import pygame
-from game.player.movement.controller import handle_mouse_click, get_reachable_area
-from game.keybinds.loader import load_keybinds
-from data.map.mansion_floor_1 import TILE_MAP as MANSION_MAP
-from data.map.mansion_ladder_map import MANSION_LADDER_SUBMAP
-from data.colors import *
-x
-# Constants
-GRID_WIDTH, GRID_HEIGHT = 10, 10
-TILE_SIZE = 48
-current_map = MANSION_MAP
-player_pos = {"x": 0, "y": 0}
-map_name = "mansion"  # Can be "mansion" or "ladder"
-reachable_area = [get_reachable_area(player_pos["x"], player_pos["y"], current_map)]  # mutable list
-keybinds = load_keybinds()
+from settings import WIDTH, HEIGHT, TITLE
+from core.game import Game
 
-# Init Pygame
-pygame.init()
-screen = pygame.display.set_mode((GRID_WIDTH * TILE_SIZE, GRID_HEIGHT * TILE_SIZE))
-pygame.display.set_caption("Top-Down Grid Map")
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption(TITLE)
+    
+    game = Game(screen)  # Now passing the screen parameter
+    game.run()
+    
+    pygame.quit()
 
-
-def draw_grid():
-    screen.fill(BLACK)
-    for y in range(GRID_HEIGHT):
-        for x in range(GRID_WIDTH):
-            tile = current_map[y, x]
-            if tile == 1:      # Wall
-                color = GRAY
-            elif tile == 2:    # Obstacle
-                color = YELLOW
-            elif tile == 3:    # Container
-                color = GREEN
-            elif tile == 4:    # Ladder
-                color = BROWN
-            elif tile == 0:    # Walkable
-                color = WHITE
-            else:
-                color = BLACK
-
-            rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            pygame.draw.rect(screen, color, rect)
-            pygame.draw.rect(screen, BLACK, rect, 1)
-
-    px, py = player_pos["x"], player_pos["y"]
-    center = (px * TILE_SIZE + TILE_SIZE // 2, py * TILE_SIZE + TILE_SIZE // 2)
-    pygame.draw.circle(screen, BLUE, center, TILE_SIZE // 3)
-    pygame.display.flip()
-
-
-# Main loop
-running = True
-clock = pygame.time.Clock()
-
-while running:
-    draw_grid()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            handle_mouse_click(event, player_pos, current_map, TILE_SIZE, reachable_area)
-
-        elif event.type == pygame.KEYDOWN:
-            if event.key == keybinds["use"]:
-                px, py = player_pos["x"], player_pos["y"]
-                tile = current_map[py, px]
-                if tile == 3:
-                    print("Open container")
-                elif tile == 4:
-                    print("Interact with ladder")
-                elif tile == 2:
-                    print("Obstacle interaction logic")
-
-    clock.tick(60)
-
-pygame.quit()
+if __name__ == "__main__":
+    main()
