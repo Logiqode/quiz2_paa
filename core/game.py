@@ -10,11 +10,12 @@ from settings import GRID_SIZE, GRID_COLS, GRID_ROWS
 from core.camera import Camera
 
 class Game:
-    def __init__(self, screen):
+    def __init__(self, screen, algorithm):
         self.screen = screen
         self.running = True
         self.clock = pygame.time.Clock()
         self.scale_factor = 2
+        self.algorithm = algorithm  
         self.base_width = WIDTH // self.scale_factor
         self.base_height = HEIGHT // self.scale_factor
         
