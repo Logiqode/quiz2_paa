@@ -3,4 +3,6 @@ venv/
 assets/tilesets/0x72_DungeonTilesetII_v1.7/0x72_DungeonTilesetII_v1.7/*.txt
 assets/tilesets/0x72_DungeonTilesetII_v1.7/0x72_DungeonTilesetII_v1.7/*.md
 
+core/__pycache__/
+core/*.pyc
 __pycache__/
