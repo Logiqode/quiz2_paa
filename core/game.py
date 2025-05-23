@@ -12,28 +12,33 @@ from core.camera import Camera
 class Game:
     def __init__(self, screen):
         self.screen = screen
-        self.clock = pygame.time.Clock()
-        self.running = True
-        self.event_handler = EventHandler(self)
+        self.running = True  # Initialize the running flag
+        self.clock = pygame.time.Clock()  # Initialize the game clock
+        self.scale_factor = 2  # Default scale factor
+        self.base_width = WIDTH // self.scale_factor
+        self.base_height = HEIGHT // self.scale_factor
         
-        # Load map and initialize pathfinder
+        # Initialize systems
         self.grid, self.tiled_data = load_tiled_map("assets/maps/TiledMap1_PAA.json")
         self.pathfinder = Pathfinder()
-        
-        # Initialize game state with the grid
         self.state = GameState(self.grid)
-        self.state.player_grid_pos = self.find_walkable_position()  # Implement this
+        
+        # Initialize camera with base dimensions
+        map_pixel_width = self.tiled_data["width"] * GRID_SIZE
+        map_pixel_height = self.tiled_data["height"] * GRID_SIZE
+        self.camera = Camera(self.base_width, self.base_height, map_pixel_width, map_pixel_height)
         
         # Initialize renderer
         self.tileset_manager = TilesetManager()
         for tileset in self.tiled_data["tilesets"]:
             self.tileset_manager.load_tileset(tileset)
-        self.renderer = MapRenderer(screen, self.tileset_manager)
-
-        # Initialize camera
-        map_pixel_width = self.tiled_data["width"] * GRID_SIZE
-        map_pixel_height = self.tiled_data["height"] * GRID_SIZE
-        self.camera = Camera(WIDTH, HEIGHT, map_pixel_width, map_pixel_height)
+        
+        # Create base surface for rendering
+        self.base_surface = pygame.Surface((self.base_width, self.base_height))
+        self.renderer = MapRenderer(self.base_surface, self.tileset_manager)
+        
+        # Initialize event handling
+        self.event_handler = EventHandler(self)
     
     def find_walkable_position(self):
         """Find first walkable position for player spawn"""
@@ -58,7 +63,20 @@ class Game:
         self.camera.update(self.state.player_pixel_pos)
     
     def draw(self):
+        # Clear base surface
+        self.base_surface.fill((0, 0, 0))
+        
+        # Draw everything to base surface (original scale)
         self.renderer.draw(self.state, self.tiled_data, self.camera)
+        
+        # Scale up to display surface
+        scaled_surface = pygame.transform.scale(
+            self.base_surface,
+            (self.base_width * self.scale_factor,
+            self.base_height * self.scale_factor)
+        )
+        self.screen.blit(scaled_surface, (0, 0))
+        
         pygame.display.flip()
     
     def quit_game(self):
