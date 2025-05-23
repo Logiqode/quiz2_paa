@@ -7,4 +7,7 @@ __pycache__/
 core/algorithms/__pycache__/
 core/events/__pycache__/
 core/__pycache__/
+core/map/__pycache__/
 core/*.pyc
+
+__pycache__/
