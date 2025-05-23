@@ -47,10 +47,6 @@ class Game:
     def update(self):
         dt = self.clock.get_time() / 1000
         self.state.update_player_position(dt)
-        
-        # If we have a target but no path, calculate one
-        if self.state.target_pos and not self.state.path:
-            self.state.calculate_path()
     
     def draw(self):
         self.screen.fill(BLACK)
