@@ -20,6 +20,7 @@ class InputHandler:
             if 0 <= grid_x < GRID_COLS and 0 <= grid_y < GRID_ROWS:
                 if self.game.state.grid[grid_y][grid_x] == 0:  # Walkable
                     self.game.state.target_pos = (grid_x, grid_y)
+                    #Change Algorithms to your liking
                     self.game.state.path = self.game.pathfinder.bfs(
                         self.game.state.player_grid_pos,
                         self.game.state.target_pos,
