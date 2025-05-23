@@ -23,7 +23,7 @@ class Game:
         
         # Load map data and the new tile properties grid
         # The first returned value is now tile_properties_grid
-        self.tile_properties_grid, self.tiled_data = load_tiled_map("assets/maps/TiledMap1.1_PAA.json")
+        self.tile_properties_grid, self.tiled_data = load_tiled_map("assets/maps/TiledMap1.2_PAA.json")
         
         # Initialize Pathfinder (it's static methods, so just need the class)
         self.pathfinder = Pathfinder()

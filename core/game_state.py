@@ -66,7 +66,6 @@ class GameState:
             if self.current_form != new_form:
                 print(f"Switching form to: {new_form}")
                 self.current_form = new_form
-                # Optional: Cancel current movement/path if form changes
                 # Check if the current tile is still walkable for the new form
                 current_x, current_y = self.player_pos
                 if not self.is_walkable(current_x, current_y):
@@ -106,12 +105,12 @@ class GameState:
     
     def update_player_position(self, dt):
         """Update smooth movement towards next path node"""
-        if not self.path and not self.is_moving:
+        if not self.is_moving and not self.path:
+            # Not moving and no path, nothing to do
             return
             
         if not self.is_moving and self.path:
-            # Before starting movement to the next node, double-check if it's walkable for the current form
-            # This handles cases where the form might change after path calculation but before movement starts
+            # Start moving towards the next node in the path
             next_grid_pos = self.path[0]
             if not self.is_walkable(next_grid_pos[0], next_grid_pos[1]):
                 print(f"Next path node {next_grid_pos} is not walkable for form {self.current_form}. Cancelling path.")
@@ -125,25 +124,43 @@ class GameState:
             self.is_moving = True
         
         if self.is_moving:
+            # If we are currently moving towards a target pixel
+            if not self.current_target_pixel:
+                 # Should not happen if is_moving is True, but safety check
+                 print("Warning: is_moving is True but current_target_pixel is None. Cancelling movement.")
+                 self.cancel_movement()
+                 return
+                 
             dx = self.current_target_pixel[0] - self.player_pixel_pos[0]
             dy = self.current_target_pixel[1] - self.player_pixel_pos[1]
             distance = (dx**2 + dy**2)**0.5
             
-            if distance < 2:  # Snap to target
+            if distance < 2:  # Reached the target pixel (close enough)
                 self.player_pixel_pos = list(self.current_target_pixel)
                 self.player_grid_pos = (
                     int(self.player_pixel_pos[0] // GRID_SIZE),
                     int(self.player_pixel_pos[1] // GRID_SIZE)
                 )
-                self.path.pop(0)
-                self.is_moving = False
+                
+                # --- FIX: Check if path is not empty before popping --- 
+                if self.path:
+                    self.path.pop(0) # Remove the node we just reached
+                else:
+                    # This case might indicate a logic issue if is_moving was true but path was empty
+                    # For now, just log a warning.
+                    print("Warning: Reached target pixel, but path was already empty.")
+                # --- End of FIX --- 
+                
+                self.is_moving = False # Stop moving until the next node is processed (if any)
+                self.current_target_pixel = None # Clear the pixel target
                 
                 if not self.path:
-                    # Path complete
+                    # Path is now complete
                     self.target_pos = None 
-                    self.current_target_pixel = None
+                    # print("Path complete.") # Optional debug message
                     
             else:
+                # Move towards the target pixel
                 move_dist = min(distance, self.movement_speed * dt)
                 self.player_pixel_pos[0] += (dx / distance) * move_dist
                 self.player_pixel_pos[1] += (dy / distance) * move_dist
