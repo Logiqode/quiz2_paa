@@ -25,3 +25,27 @@ class Pathfinder:
                     queue.append(((nx, ny), path + [(nx, ny)]))
         
         return []  # No path found
+    
+    @staticmethod
+    def dfs(start, end, grid):
+        """Depth-First Search pathfinding"""
+        if start == end:
+            return []
+        
+        stack = [(start, [start])]
+        visited = set([start])
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
+        while stack:
+            (x, y), path = stack.pop()
+            
+            if (x, y) == end:
+                return path[1:]
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if (0 <= nx < len(grid[0]) and 0 <= ny < len(grid) and 
+                    grid[ny][nx] == 0 and (nx, ny) not in visited):
+                    visited.add((nx, ny))
+                    stack.append(((nx, ny), path + [(nx, ny)]))
+
+        return []  # No path found
