@@ -12,25 +12,34 @@ from core.camera import Camera
 class Game:
     def __init__(self, screen):
         self.screen = screen
-        self.running = True  # Initialize the running flag
-        self.clock = pygame.time.Clock()  # Initialize the game clock
-        self.scale_factor = 2  # Default scale factor
+        self.running = True
+        self.clock = pygame.time.Clock()
+        self.scale_factor = 2
         self.base_width = WIDTH // self.scale_factor
         self.base_height = HEIGHT // self.scale_factor
         
-        # Initialize systems
-        self.grid, self.tiled_data = load_tiled_map("assets/maps/TiledMap1_PAA.json")
-        self.pathfinder = Pathfinder()
-        self.state = GameState(self.grid)
+        # --- Initialize systems --- 
         
-        # Initialize camera with base dimensions
+        # Load map data and the new tile properties grid
+        # The first returned value is now tile_properties_grid
+        self.tile_properties_grid, self.tiled_data = load_tiled_map("assets/maps/TiledMap1.1_PAA.json")
+        
+        # Initialize Pathfinder (it's static methods, so just need the class)
+        self.pathfinder = Pathfinder()
+        
+        # Initialize GameState with the tile_properties_grid
+        self.state = GameState(self.tile_properties_grid)
+        
+        # Initialize camera
         map_pixel_width = self.tiled_data["width"] * GRID_SIZE
         map_pixel_height = self.tiled_data["height"] * GRID_SIZE
         self.camera = Camera(self.base_width, self.base_height, map_pixel_width, map_pixel_height)
         
         # Initialize renderer
         self.tileset_manager = TilesetManager()
-        for tileset in self.tiled_data["tilesets"]:
+        for tileset in self.tiled_data.get("tilesets", []):
+            # Ensure tileset loading uses the correct path if needed
+            # Assuming load_tileset handles relative paths or uses a base asset path
             self.tileset_manager.load_tileset(tileset)
         
         # Create base surface for rendering
@@ -40,23 +49,17 @@ class Game:
         # Initialize event handling
         self.event_handler = EventHandler(self)
     
-    def find_walkable_position(self):
-        """Find first walkable position for player spawn"""
-        for y in range(len(self.grid)):
-            for x in range(len(self.grid[0])):
-                if self.grid[y][x] == 0:
-                    return (x, y)
-        return (GRID_COLS//2, GRID_ROWS//2)  # Fallback
+    # Removed find_walkable_position as it's now handled in GameState
     
     def run(self):
         while self.running:
-            self.clock.tick(FPS)
+            dt = self.clock.tick(FPS) / 1000.0 # Get delta time in seconds
             self.event_handler.process_events()
-            self.update()
+            self.update(dt)
             self.draw()
     
-    def update(self):
-        dt = self.clock.get_time() / 1000
+    def update(self, dt):
+        # Pass delta time to player position update for smooth movement
         self.state.update_player_position(dt)
         
         # Update camera to follow player's pixel position
@@ -64,9 +67,10 @@ class Game:
     
     def draw(self):
         # Clear base surface
-        self.base_surface.fill((0, 0, 0))
+        self.base_surface.fill(BLACK) # Use defined BLACK color
         
         # Draw everything to base surface (original scale)
+        # Pass game_state, tiled_data, and camera to the renderer
         self.renderer.draw(self.state, self.tiled_data, self.camera)
         
         # Scale up to display surface
@@ -80,4 +84,6 @@ class Game:
         pygame.display.flip()
     
     def quit_game(self):
+        print("Quitting game...")
         self.running = False
+

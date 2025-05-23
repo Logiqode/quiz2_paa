@@ -28,17 +28,36 @@ class InputHandler:
             grid_x = mouse_x // GRID_SIZE
             grid_y = mouse_y // GRID_SIZE
             
-            if (0 <= grid_x < len(self.game.state.grid[0])) and (0 <= grid_y < len(self.game.state.grid)):
-                if self.game.state.grid[grid_y][grid_x] == 0:  # Walkable
-                    self.game.state.target_pos = (grid_x, grid_y)
-                    self.game.state.path = self.game.pathfinder.bfs(
-                        self.game.state.player_grid_pos,
-                        self.game.state.target_pos,
-                        self.game.state.grid
-                    )
+            # Use the GameState's is_walkable method which checks the current form
+            if self.game.state.is_walkable(grid_x, grid_y):
+                print(f"Target set to: ({grid_x}, {grid_y}) for form {self.game.state.current_form}")
+                self.game.state.target_pos = (grid_x, grid_y)
+                # Call pathfinder with tile_properties_grid and current_form
+                self.game.state.path = self.game.pathfinder.bfs(
+                    self.game.state.player_pos, # Use property for current position
+                    self.game.state.target_pos,
+                    self.game.state.tile_properties_grid, # Pass the properties grid
+                    self.game.state.current_form # Pass the current form
+                )
+                if not self.game.state.path and self.game.state.player_pos != self.game.state.target_pos:
+                    print(f"No path found to ({grid_x}, {grid_y}) for form {self.game.state.current_form}")
+                elif self.game.state.path:
+                    print(f"Path found: {self.game.state.path}")
+                    self.game.state.is_moving = False # Reset moving flag to start new path
+            else:
+                print(f"Clicked non-walkable tile ({grid_x}, {grid_y}) for form {self.game.state.current_form}")
 
     def handle_key_press(self, event):
         if event.key == KEYBINDS["quit"]:
             self.game.quit_game()
         elif event.key == KEYBINDS["reset"]:
             self.game.state.reset()
+        # Form switching keys
+        elif event.key == KEYBINDS["human"]:
+            self.game.state.set_form("human")
+        elif event.key == KEYBINDS["bat"]:
+            self.game.state.set_form("bat")
+        elif event.key == KEYBINDS["rat"]:
+            self.game.state.set_form("rat")
+        # Add other keybinds as needed
+

@@ -15,6 +15,8 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BROWN = (139, 69, 19)
 YELLOW = (255, 255, 0)
+PURPLE = (128, 0, 128)
+LIGHT_GRAY = (211, 211, 211)
 
 # Grid settings
 GRID_SIZE = 16
@@ -25,5 +27,14 @@ GRID_ROWS = HEIGHT // GRID_SIZE
 KEYBINDS = {
     "quit": pygame.K_ESCAPE,
     "reset": pygame.K_r,
-    "toggle_obstacle": pygame.K_o
+    "toggle_obstacle": pygame.K_o,
+    "human": pygame.K_1,
+    "bat": pygame.K_2,
+    "rat": pygame.K_3,
+}
+
+FORM_COLORS = {
+    'human': GREEN,    # Green
+    'bat': PURPLE,  # Purple
+    'rat': LIGHT_GRAY, # Light Gray
 }
