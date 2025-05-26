@@ -1,4 +1,6 @@
+#pathfinder.py
 from collections import deque
+import heapq
 import math
 
 class Pathfinder:
@@ -160,3 +162,129 @@ class Pathfinder:
         print(f"Pathfinder DFS: No path found from {start} to {end} for form {current_form}.")
         return []  # No path found
 
+    @staticmethod
+    def astar(start, end, tile_properties_grid, current_form):
+        """A* Search pathfinding considering form-specific walkability.
+           Uses Manhattan distance as heuristic for grid-based movement.
+           If the target 'end' is unreachable, finds a path to the closest reachable tile to 'end'.
+
+        Args:
+            start (tuple): The starting grid coordinates (x, y).
+            end (tuple): The target grid coordinates (x, y).
+            tile_properties_grid (list[list[dict]]): Grid containing tile properties.
+            current_form (str): The player's current form (e.g., 'human', 'bat').
+
+        Returns:
+            list: A list of coordinates representing the optimal path (excluding start), 
+                  or [] if no path found or start is invalid.
+        """
+        height = len(tile_properties_grid)
+        if height == 0:
+            return []
+        width = len(tile_properties_grid[0])
+        form_walkable_key = f"{current_form}_walkable"
+
+        # --- Helper function for Manhattan distance (heuristic) ---
+        def heuristic(p1, p2):
+            return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+        # --- Validate Start Position --- 
+        if not (0 <= start[0] < width and 0 <= start[1] < height and 
+                tile_properties_grid[start[1]][start[0]].get(form_walkable_key, False)):
+            print(f"Pathfinder A*: Start position {start} is not walkable for form {current_form}.")
+            return []
+            
+        # --- Handle case where start is the end ---
+        if start == end:
+             # Check if end is walkable, if so, path is empty (already there)
+             if tile_properties_grid[start[1]][start[0]].get(form_walkable_key, False):
+                 return []
+             else: # Start is the end, but end is not walkable - this case is ambiguous, return no path
+                 print(f"Pathfinder A*: Start {start} is the same as End, but it's not walkable for form {current_form}.")
+                 return []
+
+        # --- A* Initialization ---
+        # Priority queue: (f_score, g_score, position, path)
+        # f_score = g_score + heuristic (total estimated cost)
+        # g_score = actual cost from start to current position
+        open_set = []
+        heapq.heappush(open_set, (heuristic(start, end), 0, start, [start]))
+        
+        # Keep track of visited nodes and their best g_scores
+        visited = {}
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # 4-way movement
+
+        # For fallback to closest reachable tile
+        closest_path_to_target = []
+        min_dist_to_target = float('inf')
+        target_walkable = (0 <= end[0] < width and 0 <= end[1] < height and 
+                           tile_properties_grid[end[1]][end[0]].get(form_walkable_key, False))
+
+        # --- A* Main Loop ---
+        while open_set:
+            f_score, g_score, (x, y), path = heapq.heappop(open_set)
+
+            # Skip if we've already found a better path to this node
+            if (x, y) in visited and visited[(x, y)] <= g_score:
+                continue
+            
+            visited[(x, y)] = g_score
+
+            # --- Check if current node is the target ---
+            if (x, y) == end:
+                print(f"Pathfinder A*: Optimal path found to {end} for form {current_form}.")
+                return path[1:]  # Exclude start position
+
+            # --- Update closest reachable node found so far ---
+            current_dist = heuristic((x, y), end)
+            if current_dist < min_dist_to_target:
+                min_dist_to_target = current_dist
+                closest_path_to_target = path
+
+            # --- Explore Neighbors ---
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                
+                # Check bounds and walkability for the form
+                if not (0 <= nx < width and 0 <= ny < height and
+                        tile_properties_grid[ny][nx].get(form_walkable_key, False)):
+                    continue
+                
+                # Calculate new g_score (cost from start to neighbor)
+                new_g_score = g_score + 1  # Each step costs 1
+                
+                # Skip if we've already found a better path to this neighbor
+                if (nx, ny) in visited and visited[(nx, ny)] <= new_g_score:
+                    continue
+                
+                # Calculate f_score (total estimated cost)
+                h_score = heuristic((nx, ny), end)
+                new_f_score = new_g_score + h_score
+                
+                # Add neighbor to open set
+                new_path = path + [(nx, ny)]
+                heapq.heappush(open_set, (new_f_score, new_g_score, (nx, ny), new_path))
+
+        # --- A* Finished: Target Not Reached Directly ---
+        if not target_walkable:
+            print(f"Pathfinder A*: Target {end} is not walkable for form {current_form}.")
+            # Fallback: Path to the closest visited node
+            if closest_path_to_target:
+                closest_node = closest_path_to_target[-1]
+                print(f"Pathfinder A*: Returning path to closest reachable node {closest_node}.")
+                return closest_path_to_target[1:] # Exclude start node
+            else:
+                # Should not happen if start was valid
+                print(f"Pathfinder A*: No reachable nodes found at all for form {current_form} from {start}.")
+                return []
+        else:
+            # Target was walkable, but no path was found (e.g., isolated area)
+            print(f"Pathfinder A*: Target {end} is walkable but no path found from {start} for form {current_form}.")
+            # Fallback to closest reachable node
+            if closest_path_to_target:
+                closest_node = closest_path_to_target[-1]
+                print(f"Pathfinder A*: Returning path to closest reachable node {closest_node} as target was unreachable.")
+                return closest_path_to_target[1:]
+            else:
+                print(f"Pathfinder A*: No reachable nodes found at all for form {current_form} from {start}.")
+                return []

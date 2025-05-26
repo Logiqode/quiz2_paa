@@ -1,3 +1,4 @@
+#game.py
 from core.game_state import GameState
 from core.map.map_renderer import MapRenderer
 import pygame

@@ -1,3 +1,4 @@
+#game_state.py
 from settings import GRID_ROWS, GRID_COLS, GRID_SIZE
 from core.map.map_loader import load_tiled_map
 from core.algorithms.pathfinder import Pathfinder

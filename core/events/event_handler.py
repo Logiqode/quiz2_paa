@@ -1,3 +1,4 @@
+#event_handler.py
 import pygame
 from core.events.input_handler import InputHandler
 

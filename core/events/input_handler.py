@@ -1,3 +1,4 @@
+#input_handler.py
 import pygame
 from settings import GRID_SIZE, GRID_COLS, GRID_ROWS, KEYBINDS
 from core.algorithms.pathfinder import Pathfinder
@@ -47,6 +48,14 @@ class InputHandler:
                         self.game.state.tile_properties_grid,
                         self.game.state.current_form
                     )
+                elif self.game.algorithm == "ASTAR":
+                    self.game.state.path = self.game.pathfinder.astar(
+                        self.game.state.player_grid_pos,
+                        self.game.state.target_pos,
+                        self.game.state.tile_properties_grid,
+                        self.game.state.current_form
+                    )
+                    
                 if not self.game.state.path and self.game.state.player_pos != self.game.state.target_pos:
                     print(f"No path found to ({grid_x}, {grid_y}) for form {self.game.state.current_form}")
                 elif self.game.state.path:
@@ -68,4 +77,3 @@ class InputHandler:
         elif event.key == KEYBINDS["rat"]:
             self.game.state.set_form("rat")
         # Add other keybinds as needed
-
