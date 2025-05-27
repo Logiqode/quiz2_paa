@@ -33,7 +33,9 @@ The game was initiated on Python 3.13.2. <br>
 - BFS implementation
 - Setting up tilemaps, assets, and project initialization
 
-### Revy Pramana (x)
+### Revy Pramana (5025221252)
+- DFS implementation
+- Main Menu Initialization, Algorithm Picker (DFS, BFS or A*)
 
 ### Haikal Athallarik (x)
 
