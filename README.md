@@ -8,6 +8,9 @@
 | Revy Pramana | 5025221252 |
 | Haikal Athallarik | 5025221232 |
 
+## Project Report
+[Quiz 2 Report](https://github.com/Logiqode/quiz2_paa/blob/main/EF234405_DAA_Q2_5025221139_Jeremy%20James_5025221232_Haikal%20Athallarik_5025221252_Revy%20Pramana.pdf)
+
 ## Project Description
 A simple shapeshifting puzzle game to test out real searching algorithms for player movements.
 
