@@ -41,9 +41,9 @@ The game was initiated on Python 3.13.2. <br>
 - A*Star Implementation
 - Redesign Main menu and Handling Sprites
 ## Assets
-Tileset by 0x72: [https://0x72.itch.io/dungeontileset-ii](https://0x72.itch.io/dungeontileset-ii)
-Sprites by 
-IndigoFenix : [https://opengameart.org/content/boundworlds-acolytes-human-and-monster](https://opengameart.org/content/boundworlds-acolytes-human-and-monster)
-bagzie : [https://opengameart.org/content/bat-sprite](https://opengameart.org/content/bat-sprite)
-Reemax : [https://opengameart.org/content/lpc-rat-cat-and-dog](https://opengameart.org/content/lpc-rat-cat-and-dog)
+Tileset by 0x72: [https://0x72.itch.io/dungeontileset-ii](https://0x72.itch.io/dungeontileset-ii)<br>
+Sprites by<br>
+IndigoFenix : [https://opengameart.org/content/boundworlds-acolytes-human-and-monster](https://opengameart.org/content/boundworlds-acolytes-human-and-monster) <br>
+bagzie : [https://opengameart.org/content/bat-sprite](https://opengameart.org/content/bat-sprite) <br>
+Reemax : [https://opengameart.org/content/lpc-rat-cat-and-dog](https://opengameart.org/content/lpc-rat-cat-and-dog) <br>
 
