@@ -38,7 +38,8 @@ The game was initiated on Python 3.13.2. <br>
 - Main Menu Initialization, Algorithm Picker (DFS, BFS or A*)
 
 ### Haikal Athallarik (x)
-
+- A*Star Implementation
+- Redesign Main menu and Handling Sprites
 ## Assets
 Tileset by 0x72: https://0x72.itch.io/dungeontileset-ii
 
